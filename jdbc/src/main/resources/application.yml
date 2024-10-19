@@ -1,0 +1,8 @@
+spring:
+  datasource:
+    driverClassName: org.postgresql.Driver
+    password: test
+    url: jdbc:postgresql://localhost:5432/testdb
+    username: test
+  application:
+    name: atomicJdbcSeqquence
