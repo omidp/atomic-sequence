@@ -1,0 +1,16 @@
+spring:
+  jpa:
+    properties:
+      hibernate:
+        ddl-auto: create-drop
+        show_sql: false
+        format_sql: false
+        use_sql_comments: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    generate-ddl: true
+    open-in-view: false
+    show-sql: false
+    hibernate:
+      ddl-auto: create-drop
+  application:
+    name: atomicHibernateSeqquence
