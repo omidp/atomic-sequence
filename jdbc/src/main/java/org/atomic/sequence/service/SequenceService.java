@@ -17,6 +17,26 @@ public class SequenceService {
 
 	private final DataSource dataSource;
 
+
+	public long createSerialInvoice() {
+		try (var con = getConnection()) {
+			con.setAutoCommit(false);
+			PreparedStatement preparedStatement = con.prepareStatement("insert into serial_invoice(description) values(?) RETURNING invoice_no");
+			preparedStatement.setString(1, "txt");
+			preparedStatement.execute();
+			var rs = preparedStatement.getResultSet();
+			if (rs.next()) {
+				long seqNumber = rs.getLong(1);
+				log.info("seq num {}", seqNumber);
+				return seqNumber;
+			}
+			con.commit();
+			return -1;
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	public long createInvoiceSeqTbl() {
 		try (var con = getConnection()) {
 			con.setAutoCommit(false);

@@ -42,6 +42,8 @@ public class JdbcApplication {
 				log.info("sequence is created.");
 				con.prepareStatement("CREATE TABLE IF NOT EXISTS invoice (no bigint)").execute();
 				log.info("invoice table is created.");
+				//
+				con.prepareStatement("CREATE TABLE IF NOT EXISTS serial_invoice(invoice_no serial, description text)").execute();
 			}
 
 		};

@@ -18,4 +18,9 @@ public class SequenceController {
 		sequenceService.createInvoiceSeqTbl();
 	}
 
+	@PostMapping("/serial-invoice")
+	public Long createSerialInvoice(){
+		return sequenceService.createSerialInvoice();
+	}
+
 }
