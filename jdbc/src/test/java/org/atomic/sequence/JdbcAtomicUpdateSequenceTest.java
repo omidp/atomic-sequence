@@ -15,7 +15,6 @@ import org.testcontainers.utility.DockerImageName;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -23,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class JdbcAtomicSequenceTest {
+public class JdbcAtomicUpdateSequenceTest {
 
 	@ClassRule
 	private static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>(DockerImageName.parse("postgres:16-alpine"));
@@ -55,15 +54,15 @@ public class JdbcAtomicSequenceTest {
 	}
 
 	@Test
-	void test() throws InterruptedException {
+	void testCreateInvoiceUpdateSeqTbl() throws InterruptedException {
 		List<Long> expected = new ArrayList<>();
-		List<Long> actual = new CopyOnWriteArrayList<>();
+		List<Long> actual = Collections.synchronizedList(new ArrayList<>());
 		int numberOfThreads = 1000;
 		ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
-		for (long i = 1; i <= numberOfThreads; i++) {
+		for (long i = 2; i <= numberOfThreads+1; i++) {
 			expected.add(i);
 			executorService.submit(()->{
-				actual.add(sequenceService.createInvoiceSeqTbl());
+				actual.add(sequenceService.createInvoiceUpdateSeqTbl());
 			});
 		}
 		executorService.awaitTermination(3, TimeUnit.SECONDS);
@@ -71,39 +70,6 @@ public class JdbcAtomicSequenceTest {
 		assertThat(expected).isEqualTo(actual);
 	}
 
-	@Test
-	void testDbSeq() throws InterruptedException {
-		List<Long> expected = new ArrayList<>();
-		List<Long> actual = Collections.synchronizedList(new ArrayList<>());
-		int numberOfThreads = 1000;
-		ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
-		for (long i = 1; i <= numberOfThreads; i++) {
-			expected.add(i);
-			executorService.submit(()->{
-				actual.add(sequenceService.createInvoiceDbSeq());
-			});
-		}
-		executorService.awaitTermination(3, TimeUnit.SECONDS);
-		executorService.shutdown();
-		assertThat(expected).isNotEqualTo(actual);
-	}
-
-	@Test
-	void testDbSeqSerial() throws InterruptedException {
-		List<Long> expected = new ArrayList<>();
-		List<Long> actual = Collections.synchronizedList(new ArrayList<>());
-		int numberOfThreads = 1000;
-		ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
-		for (long i = 1; i <= numberOfThreads; i++) {
-			expected.add(i);
-			executorService.submit(()->{
-				actual.add(sequenceService.createSerialInvoice());
-			});
-		}
-		executorService.awaitTermination(3, TimeUnit.SECONDS);
-		executorService.shutdown();
-		assertThat(expected).isNotEqualTo(actual);
-	}
 
 
 }
