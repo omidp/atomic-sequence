@@ -104,6 +104,23 @@ public class JdbcAtomicSequenceTest {
 		assertThat(expected).isNotEqualTo(actual);
 	}
 
+	@Test
+	void testCreateInvoiceUpdateSeqTbl() throws InterruptedException {
+		List<Long> expected = new ArrayList<>();
+		List<Long> actual = Collections.synchronizedList(new ArrayList<>());
+		int numberOfThreads = 1000;
+		ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
+		for (long i = 2; i <= numberOfThreads+1; i++) {
+			expected.add(i);
+			executorService.submit(()->{
+				actual.add(sequenceService.createInvoiceUpdateSeqTbl());
+			});
+		}
+		executorService.awaitTermination(3, TimeUnit.SECONDS);
+		executorService.shutdown();
+		assertThat(expected).isEqualTo(actual);
+	}
+
 
 
 }
