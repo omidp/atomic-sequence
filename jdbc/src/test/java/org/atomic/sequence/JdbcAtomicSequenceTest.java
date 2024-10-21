@@ -54,7 +54,24 @@ public class JdbcAtomicSequenceTest {
 	}
 
 	@Test
-	void test() throws InterruptedException {
+	void testCreateInvoiceWithSerialColumn() throws InterruptedException {
+		List<Long> expected = Collections.synchronizedList(new ArrayList<>());
+		List<Long> actual = Collections.synchronizedList(new ArrayList<>());
+		int numberOfThreads = 1000;
+		ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
+		for (long i = 1; i <= numberOfThreads; i++) {
+			expected.add(i);
+			executorService.submit(()->{
+				actual.add(sequenceService.createInvoiceWithSerialColumn());
+			});
+		}
+		executorService.awaitTermination(8, TimeUnit.SECONDS);
+		executorService.shutdown();
+		assertThat(actual).isNotEqualTo(expected);
+	}
+
+	@Test
+	void testCreateInvoiceSeqTbl() throws InterruptedException {
 		List<Long> expected = Collections.synchronizedList(new ArrayList<>());
 		List<Long> actual = Collections.synchronizedList(new ArrayList<>());
 		int numberOfThreads = 1000;
@@ -67,11 +84,11 @@ public class JdbcAtomicSequenceTest {
 		}
 		executorService.awaitTermination(8, TimeUnit.SECONDS);
 		executorService.shutdown();
-		assertThat(expected).isEqualTo(actual);
+		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
-	void testDbSeq() throws InterruptedException {
+	void testCreateInvoiceDbSeq() throws InterruptedException {
 		List<Long> expected = Collections.synchronizedList(new ArrayList<>());
 		List<Long> actual = Collections.synchronizedList(new ArrayList<>());
 		int numberOfThreads = 1000;
@@ -84,24 +101,7 @@ public class JdbcAtomicSequenceTest {
 		}
 		executorService.awaitTermination(8, TimeUnit.SECONDS);
 		executorService.shutdown();
-		assertThat(expected).isNotEqualTo(actual);
-	}
-
-	@Test
-	void testDbSeqSerial() throws InterruptedException {
-		List<Long> expected = Collections.synchronizedList(new ArrayList<>());
-		List<Long> actual = Collections.synchronizedList(new ArrayList<>());
-		int numberOfThreads = 1000;
-		ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
-		for (long i = 1; i <= numberOfThreads; i++) {
-			expected.add(i);
-			executorService.submit(()->{
-				actual.add(sequenceService.createSerialInvoice());
-			});
-		}
-		executorService.awaitTermination(8, TimeUnit.SECONDS);
-		executorService.shutdown();
-		assertThat(expected).isNotEqualTo(actual);
+		assertThat(actual).isNotEqualTo(expected);
 	}
 
 

@@ -13,14 +13,24 @@ public class SequenceController {
 
 	private final SequenceService sequenceService;
 
-	@PostMapping("/invoice")
-	public void create(){
-		sequenceService.createInvoiceSeqTbl();
+	@PostMapping("/createInvoiceSeqTbl")
+	public Long createInvoiceSeqTbl(){
+		return sequenceService.createInvoiceSeqTbl();
 	}
 
-	@PostMapping("/serial-invoice")
-	public Long createSerialInvoice(){
-		return sequenceService.createSerialInvoice();
+	@PostMapping("/createInvoiceWithSerialColumn")
+	public Long createInvoiceWithSerialColumn(){
+		return sequenceService.createInvoiceWithSerialColumn();
+	}
+
+	@PostMapping("/createInvoiceUpdateRowLocking")
+	public Long createInvoiceUpdateRowLocking(){
+		return sequenceService.createInvoiceUpdateRowLocking();
+	}
+
+	@PostMapping("/createInvoiceDbSeq")
+	public Long createInvoiceDbSeq(){
+		return sequenceService.createInvoiceDbSeq();
 	}
 
 }

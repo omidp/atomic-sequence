@@ -56,14 +56,14 @@ public class JdbcAtomicUpdateSequenceTest {
 	}
 
 	@Test
-	void testCreateInvoiceUpdateSeqTbl() throws InterruptedException, ExecutionException, TimeoutException {
-		List<Long> expected = Collections.synchronizedList(new ArrayList<>());
+	void testCreateInvoiceUpdateRowLocking() throws InterruptedException, ExecutionException, TimeoutException {
+		List<Long> expected = new ArrayList<>();
 		List<Long> actual = Collections.synchronizedList(new ArrayList<>());
 		int numberOfThreads = 1000;
 		ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
 		for (long i = 2; i <= numberOfThreads+1; i++) {
 			expected.add(i);
-			executorService.submit(() -> actual.add(sequenceService.createInvoiceUpdateSeqTbl()));
+			executorService.submit(() -> actual.add(sequenceService.createInvoiceUpdateRowLocking()));
 		}
 
 		executorService.awaitTermination(8, TimeUnit.SECONDS);
