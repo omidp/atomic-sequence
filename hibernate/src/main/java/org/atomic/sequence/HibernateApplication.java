@@ -29,18 +29,6 @@ public class HibernateApplication {
 
 	@Bean CommandLineRunner cmd(DataSource dataSource, SessionFactory sessionFactory){
 		return args -> {
-			try(var con = dataSource.getConnection()) {
-				String sql = """
-					CREATE SEQUENCE IF NOT EXISTS jdbc_seq
-					    INCREMENT BY 1
-					    START WITH 1
-					    MINVALUE 1
-					    MAXVALUE  9999999999
-					    CACHE 1
-					""";
-				con.prepareStatement(sql).execute();
-			}
-
 			sessionFactory.inTransaction(session -> {
 				SeqEntity seqEntity = new SeqEntity();
 				seqEntity.setSeqNo(1);

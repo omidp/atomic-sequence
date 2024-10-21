@@ -54,7 +54,7 @@ public class HibernateAtomicSequenceTest {
 	}
 
 	@Test
-	void test() throws InterruptedException {
+	void testCreateInvoicePessimisticWrite() throws InterruptedException {
 		List<Long> expected = new ArrayList<>();
 		List<Long> actual = Collections.synchronizedList(new ArrayList<>());
 		int numberOfThreads = 1000;
@@ -62,12 +62,29 @@ public class HibernateAtomicSequenceTest {
 		for (long i = 1; i <= numberOfThreads; i++) {
 			expected.add(i);
 			executorService.submit(()->{
-				actual.add(sequenceService.createInvoiceSeqTbl());
+				actual.add(sequenceService.createInvoicePessimisticWrite());
 			});
 		}
 		executorService.awaitTermination(3, TimeUnit.SECONDS);
 		executorService.shutdown();
-		assertThat(expected).isEqualTo(actual);
+		assertThat(actual).isEqualTo(expected);
+	}
+
+	@Test
+	void testCreateInvoiceUpdateRowLocking() throws InterruptedException {
+		List<Long> expected = new ArrayList<>();
+		List<Long> actual = Collections.synchronizedList(new ArrayList<>());
+		int numberOfThreads = 1000;
+		ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
+		for (long i = 1; i <= numberOfThreads; i++) {
+			expected.add(i);
+			executorService.submit(()->{
+				actual.add(sequenceService.createInvoiceUpdateRowLocking()-1);
+			});
+		}
+		executorService.awaitTermination(3, TimeUnit.SECONDS);
+		executorService.shutdown();
+		assertThat(actual).isEqualTo(expected);
 	}
 
 }

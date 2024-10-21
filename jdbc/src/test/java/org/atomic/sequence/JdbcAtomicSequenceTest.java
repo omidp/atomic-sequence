@@ -15,7 +15,6 @@ import org.testcontainers.utility.DockerImageName;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -56,7 +55,7 @@ public class JdbcAtomicSequenceTest {
 
 	@Test
 	void test() throws InterruptedException {
-		List<Long> expected = new ArrayList<>();
+		List<Long> expected = Collections.synchronizedList(new ArrayList<>());
 		List<Long> actual = Collections.synchronizedList(new ArrayList<>());
 		int numberOfThreads = 1000;
 		ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
@@ -73,7 +72,7 @@ public class JdbcAtomicSequenceTest {
 
 	@Test
 	void testDbSeq() throws InterruptedException {
-		List<Long> expected = new ArrayList<>();
+		List<Long> expected = Collections.synchronizedList(new ArrayList<>());
 		List<Long> actual = Collections.synchronizedList(new ArrayList<>());
 		int numberOfThreads = 1000;
 		ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
@@ -90,7 +89,7 @@ public class JdbcAtomicSequenceTest {
 
 	@Test
 	void testDbSeqSerial() throws InterruptedException {
-		List<Long> expected = new ArrayList<>();
+		List<Long> expected = Collections.synchronizedList(new ArrayList<>());
 		List<Long> actual = Collections.synchronizedList(new ArrayList<>());
 		int numberOfThreads = 1000;
 		ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);

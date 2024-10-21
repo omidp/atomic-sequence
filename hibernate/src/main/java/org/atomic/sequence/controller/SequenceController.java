@@ -13,9 +13,14 @@ public class SequenceController {
 
 	private final SequenceService sequenceService;
 
-	@PostMapping("/invoice")
-	public void create(){
-		sequenceService.createInvoiceSeqTbl();
+	@PostMapping("/invoice-locking")
+	public Long createInvoiceUpdateRowLocking(){
+		return sequenceService.createInvoiceUpdateRowLocking();
+	}
+
+	@PostMapping("/invoice-pessimistic-locking")
+	public Long createInvoicePessimisticWrite(){
+		return sequenceService.createInvoicePessimisticWrite();
 	}
 
 }
