@@ -93,5 +93,28 @@ public class SequenceService {
 		}
 	}
 
+	public long createInvoiceUpdateSeqTbl() {
+    try (var con = getConnection()) {
+      con.setAutoCommit(false);
+//			long seqNumber = getSeqNumberTbl(con);
+      PreparedStatement ps = con.prepareStatement(
+          "update jdbc_seq_tbl set seq_no = seq_no +1 RETURNING seq_no");
+      ps.execute();
+      var rs = ps.getResultSet();
+      if (rs.next()) {
+        long seqNumber = rs.getLong(1);
+        log.info("seq num {}", seqNumber);
+        PreparedStatement preparedStatement = con.prepareStatement(
+            "insert into invoice(no) values(?)");
+        preparedStatement.setLong(1, seqNumber);
+        preparedStatement.execute();
+        con.commit();
+        return seqNumber;
+      }
+      return -1;
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
 }
