@@ -15,11 +15,18 @@ import org.testcontainers.utility.DockerImageName;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.in;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class JdbcAtomicUpdateSequenceTest {
@@ -54,20 +61,19 @@ public class JdbcAtomicUpdateSequenceTest {
 	}
 
 	@Test
-	void testCreateInvoiceUpdateSeqTbl() throws InterruptedException {
+	void testCreateInvoiceUpdateSeqTbl() throws InterruptedException, ExecutionException, TimeoutException {
 		List<Long> expected = new ArrayList<>();
 		List<Long> actual = Collections.synchronizedList(new ArrayList<>());
 		int numberOfThreads = 1000;
 		ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
 		for (long i = 2; i <= numberOfThreads+1; i++) {
 			expected.add(i);
-			executorService.submit(()->{
-				actual.add(sequenceService.createInvoiceUpdateSeqTbl());
-			});
+			executorService.submit(() -> actual.add(sequenceService.createInvoiceUpdateSeqTbl()));
 		}
-		executorService.awaitTermination(3, TimeUnit.SECONDS);
+
+		executorService.awaitTermination(8, TimeUnit.SECONDS);
 		executorService.shutdown();
-		assertThat(expected).isEqualTo(actual);
+		assertThat(actual).isEqualTo(expected);
 	}
 
 

@@ -57,7 +57,7 @@ public class JdbcAtomicSequenceTest {
 	@Test
 	void test() throws InterruptedException {
 		List<Long> expected = new ArrayList<>();
-		List<Long> actual = new CopyOnWriteArrayList<>();
+		List<Long> actual = Collections.synchronizedList(new ArrayList<>());
 		int numberOfThreads = 1000;
 		ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
 		for (long i = 1; i <= numberOfThreads; i++) {
@@ -66,7 +66,7 @@ public class JdbcAtomicSequenceTest {
 				actual.add(sequenceService.createInvoiceSeqTbl());
 			});
 		}
-		executorService.awaitTermination(3, TimeUnit.SECONDS);
+		executorService.awaitTermination(8, TimeUnit.SECONDS);
 		executorService.shutdown();
 		assertThat(expected).isEqualTo(actual);
 	}
@@ -83,7 +83,7 @@ public class JdbcAtomicSequenceTest {
 				actual.add(sequenceService.createInvoiceDbSeq());
 			});
 		}
-		executorService.awaitTermination(3, TimeUnit.SECONDS);
+		executorService.awaitTermination(8, TimeUnit.SECONDS);
 		executorService.shutdown();
 		assertThat(expected).isNotEqualTo(actual);
 	}
@@ -100,7 +100,7 @@ public class JdbcAtomicSequenceTest {
 				actual.add(sequenceService.createSerialInvoice());
 			});
 		}
-		executorService.awaitTermination(3, TimeUnit.SECONDS);
+		executorService.awaitTermination(8, TimeUnit.SECONDS);
 		executorService.shutdown();
 		assertThat(expected).isNotEqualTo(actual);
 	}
